@@ -19,9 +19,10 @@ class Game:
         self.running = False  # whether the game is running or not
         self.background = game_map.map_background  # the image that should be displayed as background
         self.BORDERS_TOP_LEFT = (0, 0)  # the x and y coordinates for the screen's top left corner
-        self.BORDERS_BOTTOM_RIGHT = (Game.window_width, Game.window_height)
-        # the x and y coordinates for the screen's bottom right corner
-        self.BORDERS = (self.BORDERS_TOP_LEFT, self.BORDERS_BOTTOM_RIGHT)
+        self.BORDERS_BOTTOM_RIGHT = (Game.window_width, Game.window_height)  # the x and y coordinates for
+        # the screen's bottom right corner
+        self.BORDERS = (self.BORDERS_TOP_LEFT, self.BORDERS_BOTTOM_RIGHT)  # the x and y coordinates for
+        # the screen's corners
         self.clock = pygame.time.Clock()  # used to set the game ticks per second
         self.tcp_client = tcp_client.TCPClient()
 

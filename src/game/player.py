@@ -1,14 +1,13 @@
+import time
+
 import pygame
 
 from src.game import player_sprite, shadow
-
 from src.game import projectile
-
-import time
 
 
 class Player:
-    def __init__(self, x, y, width, height, velocity):
+    def __init__(self, x, y, width, height, velocity, map_borders):
         self.x = x
         self.y = y
         self.width = width
@@ -46,6 +45,7 @@ class Player:
         self.last_bullet_time = -1  # the last time a bullet was fired, used to set fire rate
         self.is_dead = False
         self.shadow = shadow.Shadow(self)
+        self.map_borders = map_borders
 
     def move_left(self, border_top_left):
         self.current_direction = "left"
@@ -127,18 +127,67 @@ class Player:
             self.current_direction = "down"
         return False
 
-    def shoot(self):
-        if time.clock() - self.last_bullet_time > 0.3:
-            self.bullets.append(projectile.Projectile(self))
-            self.last_bullet_time = time.clock()
+    '''
+        *******************************************
+        * should be called repeatedly during game *
+        *******************************************
+    '''
 
-    def should_die(self, bullets):  # determine whether a bullet hit the player or not
-        for bullet in bullets:
-            if bullet.player != self:
-                if self.hitbox[0] <= bullet.x <= self.hitbox[2]:
-                    if self.hitbox[1] <= bullet.y <= self.hitbox[3]:
-                        self.is_dead = True
-                        return True
+    def move_by_keyboard(self, keys, mouse_buttons, borders):
 
-    def update_shadow(self):
-        self.shadow.update_shadow()
+        if keys[pygame.K_a] and keys[pygame.K_w]:
+            self.move_up_left(borders[0])
+            self.is_moving = True
+
+        elif keys[pygame.K_a] and keys[pygame.K_s]:
+            self.move_down_left(borders[0], borders[1])
+            self.is_moving = True
+
+        elif keys[pygame.K_d] and keys[pygame.K_w]:
+            self.move_up_right(borders[0], borders[1])
+            self.is_moving = True
+
+        elif keys[pygame.K_d] and keys[pygame.K_s]:
+            self.move_down_right(borders[1])
+            self.is_moving = True
+
+        elif keys[pygame.K_a]:
+            self.move_left(borders[0])
+            self.is_moving = True
+
+        elif keys[pygame.K_d]:
+            self.move_right(borders[1])
+            self.is_moving = True
+
+        elif keys[pygame.K_s]:
+            self.move_down(borders[1])
+            self.is_moving = True
+
+        elif + keys[pygame.K_w]:
+            self.move_up(borders[0])
+            self.is_moving = True
+        else:
+            self.walk_count = 0
+            self.is_moving = False
+
+        if mouse_buttons[0]:
+            self.shoot()
+
+
+def shoot(self):
+    if time.clock() - self.last_bullet_time > 0.3:
+        self.bullets.append(projectile.Projectile(self))
+        self.last_bullet_time = time.clock()
+
+
+def should_die(self, bullets):  # determine whether a bullet hit the player or not
+    for bullet in bullets:
+        if bullet.player != self:
+            if self.hitbox[0] <= bullet.x <= self.hitbox[2]:
+                if self.hitbox[1] <= bullet.y <= self.hitbox[3]:
+                    self.is_dead = True
+                    return True
+
+
+def update_shadow(self):
+    self.shadow.update_shadow()

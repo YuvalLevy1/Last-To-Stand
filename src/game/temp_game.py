@@ -51,7 +51,7 @@ def get_all_bullets(players):
 
 def main():
     global running
-    player1 = player.Player(0, 0, 35, 80, 7)
+    player1 = player.Player(0, 0, 35, 80, 7, BORDERS)
     while running:
         clock.tick(60)
         keys = pygame.key.get_pressed()
@@ -98,6 +98,7 @@ def main():
 
         if mouse_buttons[0]:
             player1.shoot()
+            print("the keys are: ", keys)
         redraw_game_window([player1])
     pygame.quit()
 

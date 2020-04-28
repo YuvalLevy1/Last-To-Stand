@@ -173,21 +173,18 @@ class Player:
         if mouse_buttons[0]:
             self.shoot()
 
+    def shoot(self):
+        if time.clock() - self.last_bullet_time > 0.3:
+            self.bullets.append(projectile.Projectile(self))
+            self.last_bullet_time = time.clock()
 
-def shoot(self):
-    if time.clock() - self.last_bullet_time > 0.3:
-        self.bullets.append(projectile.Projectile(self))
-        self.last_bullet_time = time.clock()
+    def should_die(self, bullets):  # determine whether a bullet hit the player or not
+        for bullet in bullets:
+            if bullet.player != self:
+                if self.hitbox[0] <= bullet.x <= self.hitbox[2]:
+                    if self.hitbox[1] <= bullet.y <= self.hitbox[3]:
+                        self.is_dead = True
+                        return True
 
-
-def should_die(self, bullets):  # determine whether a bullet hit the player or not
-    for bullet in bullets:
-        if bullet.player != self:
-            if self.hitbox[0] <= bullet.x <= self.hitbox[2]:
-                if self.hitbox[1] <= bullet.y <= self.hitbox[3]:
-                    self.is_dead = True
-                    return True
-
-
-def update_shadow(self):
-    self.shadow.update_shadow()
+    def update_shadow(self):
+        self.shadow.update_shadow()

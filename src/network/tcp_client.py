@@ -23,4 +23,4 @@ class TCPClient:
 
     def disconnect(self):
         self.send("bye".rjust(network_constants.MSG_LEN))
-
+        self.close_socket()

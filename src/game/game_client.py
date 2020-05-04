@@ -43,11 +43,16 @@ class Game:
 
     def connect_to_server(self):
         self.tcp_client.connect_to_server()
-        print("connecting to server")
+        print("connected to server")
+        data = self.tcp_client.receive()
+        return data
 
     def init_game(self):  # initializing game variables
         os.environ['SDL_VIDEO_WINDOW_POS'] = "{0},{1}".format(0, 0)  # setting full screen
         self.screen = pygame.display.set_mode((Game.window_width, Game.window_height))
         pygame.display.set_caption("Last To Stand")
         pygame.init()
-        self.connect_to_server()
+        return self.connect_to_server()
+
+    def receive_tcp_from_server(self):
+        return self.tcp_client.receive()

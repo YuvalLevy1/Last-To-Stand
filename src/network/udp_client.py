@@ -12,7 +12,7 @@ class UDPClient:
         self.server_address = (self.server_ip, self.server_port)
 
     def send(self, msg):
-        msg = (msg.strip()).rjust(network_constants.MSG_LEN)  # making sure the each message has the same length
+        msg = msg.rjust(network_constants.MSG_LEN, "0")  # making sure that each message has the same length
         print("sending message: {} to server".format(msg))
         self.client_socket.sendto(msg.encode(), self.server_address)
 

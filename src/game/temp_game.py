@@ -51,7 +51,7 @@ def get_all_bullets(players):
 
 def main():
     global running
-    player1 = player.Player(0, 0, 35, 80, 7, BORDERS)
+    player1 = player.Player(0, 0, BORDERS)
     while running:
         clock.tick(60)
         keys = pygame.key.get_pressed()
@@ -89,7 +89,7 @@ def main():
             player1.move_down(BORDERS[1])
             player1.is_moving = True
 
-        elif+ keys[pygame.K_w]:
+        elif + keys[pygame.K_w]:
             player1.move_up(BORDERS[0])
             player1.is_moving = True
         else:

@@ -1,4 +1,5 @@
 import socket
+
 from network import network_constants
 
 
@@ -12,10 +13,9 @@ class UDPClient:
         self.server_address = (self.server_ip, self.server_port)
 
     def send(self, msg):
-        msg = msg.rjust(network_constants.MSG_LEN, "0")  # making sure that each message has the same length
-        print("sending message: {} to server".format(msg))
+        msg = "".join([str(len(msg)).zfill(network_constants.MSG_LEN), msg.strip()])
         self.client_socket.sendto(msg.encode(), self.server_address)
 
     def disconnect(self):
-        self.send("bye".rjust(network_constants.MSG_LEN))
+        self.send("bye")
         self.client_socket.close()

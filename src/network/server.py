@@ -34,17 +34,18 @@ def tcp_connection_loop(output_sockets):
             response = "We need to wait to {} more clients". \
                 format(str(network_constants.MAX_NUM_OF_CLIENTS - clients_counter - 1))
             send_to_all_clients(output_sockets, response)
-
+            send_to_client(tcp_client_socket, "id:" + str(clients_counter))  # sending each client his id
             clients_counter = clients_counter + 1
     except Exception as e:
         print("exceptions occurred in clients connection: {}".format(e.args))
 
     finally:
+        tcp_server_socket.close()
         send_to_all_clients(output_sockets, "all clients are connected")
         return output_sockets
 
 
-""" receiving input from the tcp sockets"""
+""" receiving input from the udp sockets"""
 
 
 def receive(server_socket):
@@ -60,6 +61,55 @@ def receive(server_socket):
         return None
 
 
+"""
+the function responsible for initializing the clients' udp sockets 
+"""
+
+
+def initialize_udp_sockets():
+    udp_sockets = []
+    for i in range(network_constants.MAX_NUM_OF_CLIENTS):
+        udp_server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        udp_server_socket.bind((network_constants.SERVER_IP, network_constants.UDP_PORT_NUMBER + i))
+        udp_sockets.append(udp_server_socket)
+    return udp_sockets
+
+
+"""
+the function responsible for closing the clients' udp sockets
+"""
+
+
+def close_sockets(udp_sockets):
+    for udp_socket in udp_sockets:
+        udp_socket.close()
+
+
+"""
+the function creates the messages variable
+according to the amount of clients connected
+"""
+
+
+def create_socket_messages_var(udp_sockets):
+    messages = {}
+    for udp_socket in udp_sockets:
+        messages[udp_socket] = ""
+    return messages
+
+
+def send_to_all_clients(sockets, message):
+    for socket in sockets:
+        send_to_client(socket, message)
+
+
+def send_to_client(socket, message):
+    message_len = str(len(message))
+    message = "".join([message_len.zfill(network_constants.MSG_LEN), message])
+    message = message.encode()
+    socket.send(message)
+
+
 def main():
     """
     connection loop
@@ -71,7 +121,8 @@ def main():
     output_sockets = []  # the list of the clients' tcp sockets
     udp_sockets = initialize_udp_sockets()  # the list of the clients' udp sockets
     output_sockets = tcp_connection_loop(output_sockets)  # connecting all clients
-    messages = create_socket_messages_var(udp_sockets)
+    messages = create_socket_messages_var(udp_sockets)  # a dictionary with the socket
+    # as a key and message as a value
 
     try:
 
@@ -103,49 +154,6 @@ def main():
         print("2:", e.args)
     finally:
         close_sockets(udp_sockets)
-
-
-"""
-the function responsible for initializing the clients' udp sockets 
-"""
-
-
-def initialize_udp_sockets():
-    udp_sockets = []
-    for i in range(network_constants.MAX_NUM_OF_CLIENTS):
-        udp_server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        udp_server_socket.bind((network_constants.SERVER_IP, network_constants.UDP_PORT_NUMBER + i))
-        udp_sockets.append(udp_server_socket)
-    return udp_sockets
-
-
-"""
-the function responsible for closing the clients' udp sockets
-"""
-
-
-def close_sockets(udp_sockets):
-    for udp_socket in udp_sockets:
-        udp_socket.close()
-
-
-def create_socket_messages_var(udp_sockets):
-    messages = {}
-    for udp_socket in udp_sockets:
-        messages[udp_socket] = ""
-    return messages
-
-
-def send_to_all_clients(sockets, message):
-    message_len = str(len(message))
-    message = "".join([message_len.zfill(network_constants.MSG_LEN), message])
-    message = message.encode()
-    for tcp_socket in sockets:
-        tcp_socket.send(message)
-
-
-def distribute_id():
-    pass
 
 
 if __name__ == '__main__':

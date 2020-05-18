@@ -61,44 +61,8 @@ def main():
             if event.type == pygame.QUIT or keys[pygame.K_q]:
                 running = False
 
-        if keys[pygame.K_a] and keys[pygame.K_w]:
-            player1.move_up_left(BORDERS[0])
-            player1.is_moving = True
-
-        elif keys[pygame.K_a] and keys[pygame.K_s]:
-            player1.move_down_left(BORDERS[0], BORDERS[1])
-            player1.is_moving = True
-
-        elif keys[pygame.K_d] and keys[pygame.K_w]:
-            player1.move_up_right(BORDERS[0], BORDERS[1])
-            player1.is_moving = True
-
-        elif keys[pygame.K_d] and keys[pygame.K_s]:
-            player1.move_down_right(BORDERS[1])
-            player1.is_moving = True
-
-        elif keys[pygame.K_a]:
-            player1.move_left(BORDERS[0])
-            player1.is_moving = True
-
-        elif keys[pygame.K_d]:
-            player1.move_right(BORDERS[1])
-            player1.is_moving = True
-
-        elif keys[pygame.K_s]:
-            player1.move_down(BORDERS[1])
-            player1.is_moving = True
-
-        elif + keys[pygame.K_w]:
-            player1.move_up(BORDERS[0])
-            player1.is_moving = True
-        else:
-            player1.walk_count = 0
-            player1.is_moving = False
-
-        if mouse_buttons[0]:
-            player1.shoot()
-            print("the keys are: ", keys)
+        player1.move_by_keyboard(keys, mouse_buttons, BORDERS)
+        print("the keys are: ", keys)
         redraw_game_window([player1])
     pygame.quit()
 

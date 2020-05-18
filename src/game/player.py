@@ -147,35 +147,35 @@ class Player:
     def move_by_keyboard(self, keys, mouse_buttons, borders):
 
         if keys[pygame.K_a] and keys[pygame.K_w]:
-            self.move_up_left(borders[0])
+            self.move_up_left(borders)
             self.is_moving = True
 
         elif keys[pygame.K_a] and keys[pygame.K_s]:
-            self.move_down_left(borders[0], borders[1])
+            self.move_down_left(borders)
             self.is_moving = True
 
         elif keys[pygame.K_d] and keys[pygame.K_w]:
-            self.move_up_right(borders[0], borders[1])
+            self.move_up_right(borders)
             self.is_moving = True
 
         elif keys[pygame.K_d] and keys[pygame.K_s]:
-            self.move_down_right(borders[1])
+            self.move_down_right(borders)
             self.is_moving = True
 
         elif keys[pygame.K_a]:
-            self.move_left(borders[0])
+            self.move_left(borders)
             self.is_moving = True
 
         elif keys[pygame.K_d]:
-            self.move_right(borders[1])
+            self.move_right(borders)
             self.is_moving = True
 
         elif keys[pygame.K_s]:
-            self.move_down(borders[1])
+            self.move_down(borders)
             self.is_moving = True
 
         elif + keys[pygame.K_w]:
-            self.move_up(borders[0])
+            self.move_up(borders)
             self.is_moving = True
         else:
             self.walk_count = 0

@@ -7,12 +7,12 @@ from src.game import projectile
 
 
 class Player:
-    def __init__(self, x, y, width, height, velocity, map_borders):
+    def __init__(self, x, y, map_borders):
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
-        self.velocity = velocity  # the amount of pixels the player moves each frame
+        self.width = 35
+        self.height = 80
+        self.velocity = 7  # the amount of pixels the player moves each frame
         self.hitbox = [x + 3, y + 3, x + 29, y + 70]  # the player's real size.
         # should be a list built like in the follow example: [top_left_x, top_left_y, bottom_right_x, bottom_right_y]
         self.directions = {"down": pygame.image.load("images\\player\\player_down0.PNG"),
@@ -47,9 +47,20 @@ class Player:
         self.shadow = shadow.Shadow(self)
         self.map_borders = map_borders
 
-    def move_left(self, border_top_left):
+        self.directions_to_functions = {"up": self.move_up,
+                                        "up right": self.move_up_right,
+                                        "right": self.move_right,
+                                        "down right": self.move_down_right,
+                                        "down": self.move_down,
+                                        "down left": self.move_down_left,
+                                        "left": self.move_left,
+                                        "up left": self.move_up_left
+
+                                        }
+
+    def move_left(self, borders):
         self.current_direction = "left"
-        if self.x - self.velocity > border_top_left[0]:
+        if self.x - self.velocity > borders[0][0]:
             self.x -= self.velocity
             self.hitbox[0] -= self.velocity
             self.hitbox[2] -= self.velocity
@@ -57,9 +68,9 @@ class Player:
             return True
         return False
 
-    def move_right(self, border_bottom_right):
+    def move_right(self, borders):
         self.current_direction = "right"
-        if self.x + self.width + self.velocity < border_bottom_right[0]:
+        if self.x + self.width + self.velocity < borders[1][0]:
             self.x += self.velocity
             self.hitbox[0] += self.velocity
             self.hitbox[2] += self.velocity
@@ -67,9 +78,9 @@ class Player:
             return True
         return False
 
-    def move_down(self, border_bottom_right):
+    def move_down(self, borders):
         self.current_direction = "down"
-        if self.y + self.height + self.velocity < border_bottom_right[1]:
+        if self.y + self.height + self.velocity < borders[1][1]:
             self.y += self.velocity
             self.hitbox[1] += self.velocity
             self.hitbox[3] += self.velocity
@@ -77,9 +88,9 @@ class Player:
             return True
         return False
 
-    def move_up(self, border_top_left):
+    def move_up(self, borders):
         self.current_direction = "up"
-        if self.y - self.velocity > border_top_left[1]:
+        if self.y - self.velocity > borders[0][1]:
             self.y -= self.velocity
             self.hitbox[1] -= self.velocity
             self.hitbox[3] -= self.velocity
@@ -87,42 +98,42 @@ class Player:
             return True
         return False
 
-    def move_up_right(self, border_top_left, border_bottom_right):
-        if self.move_up(border_top_left) and self.move_right(border_bottom_right):
+    def move_up_right(self, borders):
+        if self.move_up(borders) and self.move_right(borders):
             self.current_direction = "up right"
             return True
         if self.current_direction == "up":
-            self.move_right(border_bottom_right)
+            self.move_right(borders)
         elif self.current_direction == "right":
             self.current_direction = "up"
         return False
 
-    def move_up_left(self, border_top_left):
-        if self.move_up(border_top_left) and self.move_left(border_top_left):
+    def move_up_left(self, borders):
+        if self.move_up(borders) and self.move_left(borders):
             self.current_direction = "up left"
             return True
         if self.current_direction == "up":
-            self.move_left(border_top_left)
+            self.move_left(borders)
         elif self.current_direction == "left":
             self.current_direction = "up"
         return False
 
-    def move_down_right(self, border_bottom_right):
-        if self.move_down(border_bottom_right) and self.move_right(border_bottom_right):
+    def move_down_right(self, borders):
+        if self.move_down(borders) and self.move_right(borders):
             self.current_direction = "down right"
             return True
         if self.current_direction == "down":
-            self.move_right(border_bottom_right)
+            self.move_right(borders)
         elif self.current_direction == "right":
             self.current_direction = "down"
         return False
 
-    def move_down_left(self, border_top_left, border_bottom_right):
-        if self.move_down(border_bottom_right) and self.move_left(border_top_left):
+    def move_down_left(self, borders):
+        if self.move_down(borders) and self.move_left(borders):
             self.current_direction = "down left"
             return True
         if self.current_direction == "down":
-            self.move_left(border_top_left)
+            self.move_left(borders)
         elif self.current_direction == "left":
             self.current_direction = "down"
         return False
@@ -185,6 +196,9 @@ class Player:
                     if self.hitbox[1] <= bullet.y <= self.hitbox[3]:
                         self.is_dead = True
                         return True
+
+    def move_by_direction(self, direction):
+        self.directions_to_functions[direction](self.map_borders)
 
     def update_shadow(self):
         self.shadow.update_shadow()

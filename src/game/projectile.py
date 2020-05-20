@@ -1,4 +1,4 @@
-COLOR = (174, 166, 0, 0)
+COLOR = (174, 166, 0)
 
 
 class Projectile:
@@ -7,7 +7,6 @@ class Projectile:
         self.width = 5
         self.height = 10
         self.velocity = 15  # the amount of pixels the projectile moves each frame
-        self.color = (174, 166, 0)  # the projectile's color (yellow)
         self.x = player.x + (player.width / 2)
         self.y = player.y + self.height
         self.initial_direction = player.current_direction  # the player's direction the moment he shot the projectile

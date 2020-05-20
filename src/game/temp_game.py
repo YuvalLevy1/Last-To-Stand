@@ -2,6 +2,7 @@ import os
 
 import pygame
 
+import game.projectile
 from src.game import player
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = "{0},{1}".format(0, 0)  # setting full screen
@@ -29,7 +30,7 @@ def redraw_game_window(players):
         for bullet in player.bullets:
             if not bullet.move_projectile(BORDERS):
                 player.bullets.remove(bullet)
-            pygame.draw.rect(window, (174, 166, 0), (bullet.x, bullet.y, bullet.width, bullet.height))
+            pygame.draw.rect(window, game.projectile.COLOR, (bullet.x, bullet.y, bullet.width, bullet.height))
         if player.walk_count + 1 >= 12:
             player.walk_count = 0
         if player.is_moving:

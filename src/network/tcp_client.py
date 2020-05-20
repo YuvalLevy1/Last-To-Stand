@@ -30,6 +30,7 @@ class TCPClient(Thread):
 
     def disconnect(self):
         self.send("bye".rjust(network_constants.MSG_LEN))
+        self.client_socket.close()
 
     def receive(self):
         data = self.client_socket.recv(network_constants.MSG_LEN)

@@ -11,9 +11,9 @@ output_sockets: the list that will contain all Output sockets
 """
 
 
-def tcp_connection_loop(output_sockets):
+def tcp_connection_loop():
     tcp_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
+    output_sockets = []
     # Helps to system forget server after being offline for 1 second
     tcp_server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     # bind socket to localhost and  PORT_NUMBER
@@ -56,8 +56,8 @@ def receive(server_socket):
         print("message From: " + str(client_address) + "  " + data)
         return data, client_address
 
-    except Exception as e:
-        print("exception occurred in input {}".format(e.args))
+    except Exception as exception:
+        print("exception occurred in udp input {}".format(exception.args))
         return None
 
 
@@ -116,11 +116,9 @@ def main():
     every client has two threads and two sockets
     one for Input and one for Output
     """
-    # Set up the server:
-    players = []  # the list of players
-    output_sockets = []  # the list of the clients' tcp sockets
+    # Setting up the server:
     udp_sockets = initialize_udp_sockets()  # the list of the clients' udp sockets
-    output_sockets = tcp_connection_loop(output_sockets)  # connecting all clients
+    output_sockets = tcp_connection_loop()  # # the list of the clients' tcp sockets
     messages = create_socket_messages_var(udp_sockets)  # a dictionary with the socket
     # as a key and message as a value
 
@@ -145,10 +143,6 @@ def main():
                     print("connection reset error: {}".format(e.args))
                 if request:
                     game.update(udp_server_socket, request)
-                    if request == "Bye":
-                        print("break")
-                        running = False
-                        break
 
     except Exception as e:
         print("2:", e.args)

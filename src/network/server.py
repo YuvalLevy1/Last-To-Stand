@@ -133,16 +133,16 @@ def main():
         while running:
             readable, writable, exceptional = select.select(udp_sockets, [], udp_sockets, 1)
 
-            for udp_server_socket in readable:
+            for udp_socket in readable:
                 request = None
                 try:
-                    request, address = receive(udp_server_socket)
+                    request, address = receive(udp_socket)
 
                 except ConnectionResetError as e:
                     request = None
                     print("connection reset error: {}".format(e.args))
                 if request:
-                    game.update(udp_server_socket, request)
+                    game.update(udp_socket, request)
 
     except Exception as e:
         print("2:", e.args)

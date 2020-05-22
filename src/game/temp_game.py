@@ -65,7 +65,7 @@ def main():
         player1.move_by_keyboard(keys, mouse_buttons, BORDERS)
         print("the keys are: ", keys)
         redraw_game_window([player1])
-    pygame.quit()
+    pygame.player_quit()
 
 
 if __name__ == "__main__":

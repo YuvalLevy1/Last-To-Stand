@@ -19,7 +19,6 @@ class Game(threading.Thread):
         threading.Thread.__init__(self)
         self.messages = messages
         self.tcp_sockets = tcp_sockets
-        self.players = setup_players()
         self.running = False
 
     """
@@ -29,45 +28,20 @@ class Game(threading.Thread):
     """
 
     def run(self):
-        self.running = True
-        message = "starting"  # "start" consist of 5 chars
-        self.send_to_clients(message)
-        time.sleep(2)  # for client get "start"
+        self.setup_game()
         while self.running:
             time.sleep(network_constants.TPC_UPDATE_SPEED)
             message = "update:" + self.get_update_data()
-            num_str = str(len(message))
-            message = "".join([num_str.zfill(network_constants.MSG_LEN), message])
-            self.send_to_clients(message)
+            send_to_clients(self.tcp_sockets, message)
         print("end game")
-
-    def send_to_clients(self, message):
-        for socket in self.messages.keys():
-            send_to_client(socket, message)
 
     """
     receives data from each client using udp protocol
-    
+    and updates the messages variable according to it.
     """
 
-    def update(self, tcp_socket, data):
-        """
-        receives data from udp sockets from each client,
-        updates the messages variable.
-
-        :param data: the data collected from the udp_socket variable
-        :param tcp_socket - server socket of current player
-        """
-
-        if data == "Bye":
-            message = "Bye"
-            self.messages.remove(tcp_socket)
-            self.tcp_sockets.remove(tcp_socket)
-            tcp_socket.send(message)
-            client_id = tcp_socket.receive()
-            self.send_to_clients("id:{} disconnected".format(client_id))
-        else:
-            self.messages[tcp_socket] = data
+    def update(self, udp_socket, data):
+        self.messages[udp_socket] = data
 
     def get_update_data(self):
         data = []
@@ -76,12 +50,41 @@ class Game(threading.Thread):
         data = str(tuple(data))
         return data
 
+    def setup_game(self):
+        self.running = True
+        message = "starting"  # "start" consist of 5 chars
+        send_to_clients(self.tcp_sockets, message)
+        time.sleep(2)  # for client get "start"
+        players = setup_players()
+        data = []
+        for i in range(len(players)):
+            data[i] = players[i].get_info_tcp()
+        send_to_clients(self.tcp_sockets, str(data))
+
 
 def send_to_client(client_socket, message):
     message_len = str(len(message))
     message = "".join([message_len.zfill(network_constants.MSG_LEN), message])
     message = message.encode()
     client_socket.send(message)
+
+
+def send_to_clients(clients_socket, message):
+    for socket in clients_socket:
+        send_to_client(socket, message)
+
+
+def receive(socket):
+    try:
+        data_len = socket.receive(network_constants.MSG_LEN)
+        data_len = data_len.decode()
+        data = socket.receive(data_len)
+        data = data.strip()
+        return data
+
+    except Exception as exception:
+        print("exception occurred in tcp input {}".format(exception.args))
+        return None
 
 
 def setup_players():
@@ -94,13 +97,5 @@ def setup_players():
     return players
 
 
-def receive(socket):
-    try:
-        data = socket.receive(network_constants.MSG_LEN)
-        data = data.decode()
-        data = data.strip()
-        return data
-
-    except Exception as exception:
-        print("exception occurred in tcp input {}".format(exception.args))
-        return None
+def player_quit(client_id):
+    send_to_clients("id:{} disconnected".format(client_id))

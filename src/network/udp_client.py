@@ -12,9 +12,10 @@ class UDPClient:
         self.server_port = network_constants.UDP_PORT_NUMBER + client_id
         self.server_address = (self.server_ip, self.server_port)
 
-    def send(self, msg):
-        msg = "".join([str(len(msg)).zfill(network_constants.MSG_LEN), msg.strip()])
-        self.client_socket.sendto(msg.encode(), self.server_address)
+    def send(self, message):
+        message = "".join([str(len(message)).zfill(network_constants.MSG_LEN), message.strip()])
+        print("sending in udp: ", message)
+        self.client_socket.sendto(message.strip().encode(), self.server_address)
 
     def disconnect(self):
         self.send("bye")

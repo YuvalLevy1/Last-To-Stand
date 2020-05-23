@@ -1,8 +1,5 @@
-from game import game_client
+import network.network_player
+import game.game_map
 
-game = game_client.Game()
-data, id = game.init_game()
-print("the data is: {} \n{}".format(data, id))
-
-while True:
-    print(game.receive_tcp_from_server())
+player = network.network_player.NetworkPlayer(5, 6, game.game_map.BORDERS, 0)
+print(player)

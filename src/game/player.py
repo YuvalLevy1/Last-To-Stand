@@ -15,14 +15,21 @@ class Player:
         self.velocity = 7  # the amount of pixels the player moves each frame
         self.hitbox = [x + 3, y + 3, x + 29, y + 70]  # the player's real size.
         # should be a list built like in the follow example: [top_left_x, top_left_y, bottom_right_x, bottom_right_y]
-        self.directions = {"down": pygame.image.load("images\\player\\player_down0.PNG"),
-                           "up": pygame.image.load("images\\player\\player_up0.PNG"),
-                           "left": pygame.image.load("images\\player\\player_left0.PNG"),
-                           "right": pygame.image.load("images\\player\\player_right0.PNG"),
-                           "up left": pygame.image.load("images\\player\\player_up_left0.PNG"),
-                           "up right": pygame.image.load("images\\player\\player_up_right0.PNG"),
-                           "down left": pygame.image.load("images\\player\\player_down_left0.PNG"),
-                           "down right": pygame.image.load("images\\player\\player_down_right0.PNG")}
+        self.directions = {"down": pygame.image.load(
+            "D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_down0.PNG"),
+            "up": pygame.image.load("D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_up0.PNG"),
+            "left": pygame.image.load(
+                "D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_left0.PNG"),
+            "right": pygame.image.load(
+                "D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_right0.PNG"),
+            "up left": pygame.image.load(
+                "D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_up_left0.PNG"),
+            "up right": pygame.image.load(
+                "D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_up_right0.PNG"),
+            "down left": pygame.image.load(
+                "D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_down_left0.PNG"),
+            "down right": pygame.image.load(
+                "D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_down_right0.PNG")}
 
         """ directions is a dictionary that contains the default image for all of the player's directions. if the
          player is standing still, the default image will be drawn according to the players direction. """
@@ -144,38 +151,38 @@ class Player:
         *******************************************
     '''
 
-    def move_by_keyboard(self, keys, mouse_buttons, borders):
+    def move_by_keyboard(self, keys, mouse_buttons):
 
         if keys[pygame.K_a] and keys[pygame.K_w]:
-            self.move_up_left(borders)
+            self.move_up_left(self.map_borders)
             self.is_moving = True
 
         elif keys[pygame.K_a] and keys[pygame.K_s]:
-            self.move_down_left(borders)
+            self.move_down_left(self.map_borders)
             self.is_moving = True
 
         elif keys[pygame.K_d] and keys[pygame.K_w]:
-            self.move_up_right(borders)
+            self.move_up_right(self.map_borders)
             self.is_moving = True
 
         elif keys[pygame.K_d] and keys[pygame.K_s]:
-            self.move_down_right(borders)
+            self.move_down_right(self.map_borders)
             self.is_moving = True
 
         elif keys[pygame.K_a]:
-            self.move_left(borders)
+            self.move_left(self.map_borders)
             self.is_moving = True
 
         elif keys[pygame.K_d]:
-            self.move_right(borders)
+            self.move_right(self.map_borders)
             self.is_moving = True
 
         elif keys[pygame.K_s]:
-            self.move_down(borders)
+            self.move_down(self.map_borders)
             self.is_moving = True
 
         elif + keys[pygame.K_w]:
-            self.move_up(borders)
+            self.move_up(self.map_borders)
             self.is_moving = True
         else:
             self.walk_count = 0

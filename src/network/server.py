@@ -2,7 +2,7 @@ import socket
 
 import select
 
-from network import network_constants, game_server
+from network import network_constants, game_server, network_functions
 
 """
 function responsible for the connection of clients.
@@ -25,7 +25,7 @@ def tcp_connection_loop():
 
         """ connection loop """
         print("Server is waiting for clients to connect")
-        while clients_counter < network_constants.MAX_NUM_OF_CLIENTS:
+        for clients_counter in range(network_constants.MAX_NUM_OF_CLIENTS):
             tcp_client_socket, client_address = tcp_server_socket.accept()  # Connected point. Server wait for client
             ip, port = client_address
             print(" Received connection from the address: {}:{}".format(ip, port))
@@ -33,15 +33,16 @@ def tcp_connection_loop():
 
             response = "We need to wait to {} more clients". \
                 format(str(network_constants.MAX_NUM_OF_CLIENTS - clients_counter - 1))
-            send_to_all_clients(output_sockets, response)
-            send_to_client(tcp_client_socket, "id:" + str(clients_counter))  # sending each client his id
+            network_functions.send_to_client(tcp_client_socket,
+                                             "id:" + str(clients_counter))  # sending each client his id
+            network_functions.send_to_clients(output_sockets, response)
             clients_counter = clients_counter + 1
     except Exception as e:
         print("exceptions occurred in clients connection: {}".format(e.args))
 
     finally:
         tcp_server_socket.close()
-        send_to_all_clients(output_sockets, "all clients are connected")
+        network_functions.send_to_clients(output_sockets, "all clients are connected")
         return output_sockets
 
 
@@ -98,18 +99,6 @@ def create_socket_messages_var(udp_sockets):
     return messages
 
 
-def send_to_all_clients(sockets, message):
-    for socket in sockets:
-        send_to_client(socket, message)
-
-
-def send_to_client(socket, message):
-    message_len = str(len(message))
-    message = "".join([message_len.zfill(network_constants.MSG_LEN), message])
-    message = message.encode()
-    socket.send(message)
-
-
 def main():
     """
     connection loop
@@ -117,10 +106,11 @@ def main():
     one for Input and one for Output
     """
     # Setting up the server:
-    udp_sockets = initialize_udp_sockets()  # the list of the clients' udp sockets
-    output_sockets = tcp_connection_loop()  # # the list of the clients' tcp sockets
-    messages = create_socket_messages_var(udp_sockets)  # a dictionary with the socket
+    input_sockets = initialize_udp_sockets()  # the list of the clients' udp sockets
+    output_sockets = tcp_connection_loop()  # the list of the clients' tcp sockets
+    messages = create_socket_messages_var(input_sockets)  # a dictionary with the socket
     # as a key and message as a value
+    client_id = 0  # the current client's id
 
     try:
 
@@ -130,24 +120,28 @@ def main():
         running = True
         print("Server Started.")
 
-        while running:
-            readable, writable, exceptional = select.select(udp_sockets, [], udp_sockets, 1)
+        while len(input_sockets) > 0:
+            client_id = 0
+            readable, writable, exceptional = select.select(input_sockets, [], input_sockets, 1)
 
-            for udp_socket in readable:
+            for input_socket in readable:
                 request = None
                 try:
-                    request, address = receive(udp_socket)
+                    request, address = receive(input_socket)
 
                 except ConnectionResetError as e:
                     request = None
                     print("connection reset error: {}".format(e.args))
                 if request:
-                    game.update(udp_socket, request)
+                    if request == "bye":  # checking if the client wants to disconnect
+                        input_sockets.remove(input_socket)
+                    game.update(input_socket, client_id, request)
+                    client_id += 1
 
     except Exception as e:
         print("2:", e.args)
     finally:
-        close_sockets(udp_sockets)
+        close_sockets(input_sockets)
 
 
 if __name__ == '__main__':

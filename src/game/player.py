@@ -16,20 +16,20 @@ class Player:
         self.hitbox = [x + 3, y + 3, x + 29, y + 70]  # the player's real size.
         # should be a list built like in the follow example: [top_left_x, top_left_y, bottom_right_x, bottom_right_y]
         self.directions = {"down": pygame.image.load(
-            "D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_down0.PNG"),
-            "up": pygame.image.load("D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_up0.PNG"),
+            "images\\player\\player_down0.PNG"),
+            "up": pygame.image.load("images\\player\\player_up0.PNG"),
             "left": pygame.image.load(
-                "D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_left0.PNG"),
+                "images\\player\\player_left0.PNG"),
             "right": pygame.image.load(
-                "D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_right0.PNG"),
+                "images\\player\\player_right0.PNG"),
             "up left": pygame.image.load(
-                "D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_up_left0.PNG"),
+                "images\\player\\player_up_left0.PNG"),
             "up right": pygame.image.load(
-                "D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_up_right0.PNG"),
+                "images\\player\\player_up_right0.PNG"),
             "down left": pygame.image.load(
-                "D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_down_left0.PNG"),
+                "images\\player\\player_down_left0.PNG"),
             "down right": pygame.image.load(
-                "D:\\programming\\Git\\Network-Game\\src\\game\\images\\player\\player_down_right0.PNG")}
+                "images\\player\\player_down_right0.PNG")}
 
         """ directions is a dictionary that contains the default image for all of the player's directions. if the
          player is standing still, the default image will be drawn according to the players direction. """

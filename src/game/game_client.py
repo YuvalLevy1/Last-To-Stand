@@ -144,7 +144,7 @@ def main():
     while game.waiting_to_start:
         game.tcp_update(game.receive_tcp_from_server())
 
-    game.init_screen()
+    # game.init_screen()
     pygame.init()
 
     while game.running:
@@ -153,8 +153,9 @@ def main():
         for event in pygame.event.get():
             game.by_event(event)
         game.player.move_by_keyboard(keys, mouse_buttons)
+        time.sleep(10)
         game.player.send_info()
-        game.draw_game_window()
+        # game.draw_game_window()
     print("done")
     pygame.quit()
 

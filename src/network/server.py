@@ -1,6 +1,6 @@
 import socket
 
-import select
+import threading
 
 from network import network_constants, game_server, network_functions
 
@@ -50,8 +50,7 @@ def tcp_connection_loop():
 
 
 def receive(input_socket):
-    data_len = input_socket.recv(network_constants.MSG_LEN)
-    data = input_socket.recv(data_len)
+    data = (input_socket.recv(1024)).decode()
     data = data.strip()
     return data
 
@@ -93,6 +92,15 @@ def create_socket_messages_var(udp_sockets):
     return messages
 
 
+def receive_data(game, input_socket, client_id):
+    running = True
+    while running:
+        data = receive(input_socket)
+        if data == "bye":
+            running = False
+        game.update(input_socket, client_id, data)
+
+
 def main():
     """
     connection loop
@@ -109,28 +117,29 @@ def main():
     game = game_server.Game(output_sockets, messages)
     game.setDaemon(True)
     game.start()
-    running = True
     print("Server Started.")
 
-    while len(input_sockets) > 0:
-        client_id = 0
-        # readable, writable, exceptional = select.select(input_sockets, [], input_sockets, 1)
-        try:
-            for input_socket in input_sockets:
-                request = None
-                try:
-                    request = receive(input_socket)
-
-                except ConnectionResetError as e:
-                    request = None
-                    print("connection reset error: {}".format(e.args))
-                if request:
-                    if request == "bye":  # checking if the client wants to disconnect
-                        input_sockets.remove(input_socket)
-                    game.update(input_socket, client_id, request)
-                    client_id += 1
-        finally:
-            close_sockets(input_sockets)
+    for i in range(network_constants.MAX_NUM_OF_CLIENTS):
+        threading.Thread(target=receive_data, args=(game, input_sockets[i], i)).start()
+    # while len(input_sockets) > 0:
+    #     client_id = 0
+    #     # readable, writable, exceptional = select.select(input_sockets, [], input_sockets, 1)
+    #     try:
+    #         for input_socket in input_sockets:
+    #             request = None
+    #             try:
+    #                 request = receive(input_socket)
+    #
+    #             except ConnectionResetError as e:
+    #                 request = None
+    #                 print("connection reset error: {}".format(e.args))
+    #             if request:
+    #                 if request == "bye":  # checking if the client wants to disconnect
+    #                     input_sockets.remove(input_socket)
+    #                 game.update(input_socket, client_id, request)
+    #                 client_id += 1
+    #     finally:
+    #         close_sockets(input_sockets)
 
 
 if __name__ == '__main__':

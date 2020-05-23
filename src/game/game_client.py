@@ -63,8 +63,7 @@ class Game:
                 self.players[i].use_info(data[i])
         elif "disconnect" in data:
             disconnect_id = int(data.split(":")[1])
-            self.players.remove(self.players[disconnect_id])
-            self.opponents.remove(self.opponents[disconnect_id])
+            self.players[disconnect_id].is_dead = True
 
         else:
             print(data)
@@ -79,6 +78,8 @@ class Game:
     def draw_game_window(self):
         self.screen.blit(self.background, (0, 0))
         for player in self.players:
+            if player.is_dead:
+                continue
             pygame.draw.circle(self.screen, player.shadow.color, (player.shadow.x, player.shadow.y),
                                player.shadow.radius)
             for bullet in player.bullets:
@@ -153,7 +154,6 @@ def main():
             game.by_event(event)
         game.player.move_by_keyboard(keys, mouse_buttons)
         game.player.send_info()
-        game.tcp_update((game.receive_tcp_from_server()))
         game.draw_game_window()
     print("done")
     pygame.quit()

@@ -49,17 +49,11 @@ def tcp_connection_loop():
 """ receiving input from the udp sockets"""
 
 
-def receive(server_socket):
-    try:
-        data, client_address = server_socket.recvfrom(network_constants.MSG_LEN)
-        data = data.decode()
-        data = data.strip()
-        print("message From: " + str(client_address) + "  " + data)
-        return data, client_address
-
-    except Exception as exception:
-        print("exception occurred in udp input {}".format(exception.args))
-        return None
+def receive(input_socket):
+    data_len = input_socket.recv(network_constants.MSG_LEN)
+    data = input_socket.recv(data_len)
+    data = data.strip()
+    return data
 
 
 """
@@ -112,22 +106,20 @@ def main():
     # as a key and message as a value
     client_id = 0  # the current client's id
 
-    try:
+    game = game_server.Game(output_sockets, messages)
+    game.setDaemon(True)
+    game.start()
+    running = True
+    print("Server Started.")
 
-        game = game_server.Game(output_sockets, messages)
-        game.setDaemon(True)
-        game.start()
-        running = True
-        print("Server Started.")
-
-        while len(input_sockets) > 0:
-            client_id = 0
-            readable, writable, exceptional = select.select(input_sockets, [], input_sockets, 1)
-
-            for input_socket in readable:
+    while len(input_sockets) > 0:
+        client_id = 0
+        # readable, writable, exceptional = select.select(input_sockets, [], input_sockets, 1)
+        try:
+            for input_socket in input_sockets:
                 request = None
                 try:
-                    request, address = receive(input_socket)
+                    request = receive(input_socket)
 
                 except ConnectionResetError as e:
                     request = None
@@ -137,11 +129,8 @@ def main():
                         input_sockets.remove(input_socket)
                     game.update(input_socket, client_id, request)
                     client_id += 1
-
-    except Exception as e:
-        print("2:", e.args)
-    finally:
-        close_sockets(input_sockets)
+        finally:
+            close_sockets(input_sockets)
 
 
 if __name__ == '__main__':

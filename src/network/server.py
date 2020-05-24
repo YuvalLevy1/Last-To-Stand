@@ -84,7 +84,7 @@ def create_socket_messages_var(udp_sockets):
 
 def close_sockets(udp_sockets):
     for udp_socket in udp_sockets:
-        if udp_sockets is not None:
+        if udp_socket is not None:
             udp_socket.close()
 
 

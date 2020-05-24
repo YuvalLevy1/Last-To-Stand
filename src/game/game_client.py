@@ -51,6 +51,7 @@ class Game:
             self.udp_client.disconnect()
 
         elif data.startswith("update"):
+            print(data)
             data = data.split(":")[1]
             data = eval(data)
             for i in range(len(self.players)):

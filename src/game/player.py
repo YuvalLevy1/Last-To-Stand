@@ -225,44 +225,35 @@ class Player:
         if direction == "up left":
             self.move_up_left(self.map_borders)
             self.is_moving = True
-            self.walk_count += 1
 
         elif direction == "down left":
             self.move_down_left(self.map_borders)
             self.is_moving = True
-            self.walk_count += 1
 
         elif direction == "up right":
             self.move_up_right(self.map_borders)
             self.is_moving = True
-            self.walk_count += 1
 
         elif direction == "down right":
             self.move_down_right(self.map_borders)
             self.is_moving = True
-            self.walk_count += 1
 
         elif direction == "left":
             self.move_left(self.map_borders)
             self.is_moving = True
-            self.walk_count += 1
 
         elif direction == "right":
             self.move_right(self.map_borders)
             self.is_moving = True
-            self.walk_count += 1
 
         elif direction == "down":
             self.move_down(self.map_borders)
             self.is_moving = True
-            self.walk_count += 1
 
         elif direction == "up":
             self.move_up(self.map_borders)
             self.is_moving = True
-            self.walk_count += 1
         else:
-            self.walk_count = 0
             self.is_moving = False
 
     def update_shadow(self):

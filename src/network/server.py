@@ -78,7 +78,7 @@ according to the amount of clients connected
 def create_socket_messages_var(udp_sockets):
     messages = {}
     for udp_socket in udp_sockets:
-        messages[udp_socket] = ""
+        messages[udp_socket] = "nothing"
     return messages
 
 

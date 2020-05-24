@@ -70,7 +70,6 @@ class Player:
         self.current_direction = "left"
         if self.x - self.velocity > borders[0][0]:
             self.x -= self.velocity
-            print("moving left")
             self.hitbox[0] -= self.velocity
             self.hitbox[2] -= self.velocity
             self.update_shadow()
@@ -81,7 +80,6 @@ class Player:
         self.is_moving = True
         self.current_direction = "right"
         if self.x + self.width + self.velocity < borders[1][0]:
-            print("moving right")
             self.x += self.velocity
             self.hitbox[0] += self.velocity
             self.hitbox[2] += self.velocity
@@ -93,7 +91,6 @@ class Player:
         self.is_moving = True
         self.current_direction = "down"
         if self.y + self.height + self.velocity < borders[1][1]:
-            print("moving down")
             self.y += self.velocity
             self.hitbox[1] += self.velocity
             self.hitbox[3] += self.velocity
@@ -105,7 +102,6 @@ class Player:
         self.is_moving = True
         self.current_direction = "up"
         if self.y - self.velocity > borders[0][1]:
-            print("moving up")
             self.y -= self.velocity
             self.hitbox[1] -= self.velocity
             self.hitbox[3] -= self.velocity
@@ -225,36 +221,45 @@ class Player:
         if direction == "up left":
             self.move_up_left(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
 
         elif direction == "down left":
             self.move_down_left(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
 
         elif direction == "up right":
             self.move_up_right(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
 
         elif direction == "down right":
             self.move_down_right(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
 
         elif direction == "left":
             self.move_left(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
 
         elif direction == "right":
             self.move_right(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
 
         elif direction == "down":
             self.move_down(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
 
         elif direction == "up":
             self.move_up(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
         else:
             self.is_moving = False
+            self.walk_count = 0
 
     def update_shadow(self):
         self.shadow.update_shadow()

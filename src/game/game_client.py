@@ -32,7 +32,7 @@ class Game:
         self.player = self.players[self.player_id]
 
     def init_screen(self):
-        os.environ['SDL_VIDEO_WINDOW_POS'] = "{0},{1}".format(0, 0)  # setting full screen
+        os.environ['SDL_VIDEO_WINDOW_POS'] = "{0},{1}".format(50, 50)  # setting full screen
         self.screen = pygame.display.set_mode((game_map.BORDERS_BOTTOM_RIGHT[0], game_map.BORDERS_BOTTOM_RIGHT[1]))
         pygame.display.set_caption("Last To Stand")
 
@@ -51,7 +51,6 @@ class Game:
             self.udp_client.disconnect()
 
         elif data.startswith("update"):
-            print(data)
             data = data.split(":")[1]
             data = eval(data)
             for i in range(len(self.players)):
@@ -75,6 +74,7 @@ class Game:
 
     def draw_game_window(self, players):
         self.screen.blit(self.background, (0, 0))
+
         for i in range(network_constants.MAX_NUM_OF_CLIENTS):
             if players[i].is_dead:
                 print("player is dead")
@@ -86,8 +86,10 @@ class Game:
                 if not bullet.move_projectile(game_map.BORDERS):
                     players[i].bullets.remove(bullet)
                 pygame.draw.rect(self.screen, projectile.COLOR, (bullet.x, bullet.y, bullet.width, bullet.height))
-            if players[i].walk_count + 1 >= 12:
-                players[i].walk_count = 0
+
+            if self.players[i].walk_count + 1 >= 12:
+                self.players[i].walk_count = 0
+
             if players[i].is_moving:
                 print("drawing sprint")
                 try:
@@ -97,7 +99,6 @@ class Game:
                         (players[i].x, players[i].y))
                 except Exception:
                     players[i].walk_count = 0
-                # players[i].walk_count += 1
             else:
                 self.screen.blit(self.players[i].directions[self.players[i].current_direction],
                                  (self.players[i].x, self.players[i].y))
@@ -167,7 +168,7 @@ def main():
         game.draw_game_window(game.players)
 
         if time.perf_counter() - last_time > 1:
-            print(game.player.is_moving)
+            print("id: {}".format(game.players[2].walk_count))
             last_time = time.perf_counter()
         game.clock.tick(30)
 

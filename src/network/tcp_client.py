@@ -34,12 +34,13 @@ class TCPClient(Thread):
         try:
             while True:
                 data = self.receive()
-                if data == "ok":
-                    self.client_socket.close()
-                else:
-                    self.game.tcp_update(data)
-        except Exception as e:
-            print("exception occurred in tcp reading thread: {}".format(e.args))
+                if data != "nothing":
+                    if data == "ok":
+                        self.client_socket.close()
+                    else:
+                        self.game.tcp_update(data)
+        except Exception as exception:
+            print("exception occurred in tcp reading thread: {}".format(exception.args))
 
         finally:
             self.client_socket.close()

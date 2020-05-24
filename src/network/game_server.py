@@ -49,7 +49,7 @@ class Game(threading.Thread):
         self.running = True
         message = "starting"  # "start" consist of 5 chars
         network_functions.send_to_clients(self.output_sockets, message)
-        time.sleep(2)  # for client get "start"
+        time.sleep(10)  # waiting for client to start
 
     def player_quit(self, client_id):
         network_functions.send_to_client(self.output_sockets[client_id], "ok")

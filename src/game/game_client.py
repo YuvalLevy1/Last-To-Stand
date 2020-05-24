@@ -8,8 +8,6 @@ from network import tcp_client, udp_client, network_player, network_constants
 
 
 class Game:
-    window_height = 1080
-    window_width = 1920
 
     def __init__(self):
         self.screen = None
@@ -18,10 +16,6 @@ class Game:
         self.player = None
         self.running = False  # whether the game is running or not
         self.background = game_map.map_background  # the image that should be displayed as background
-        self.BORDERS_TOP_LEFT = (0, 0)  # the x and y coordinates for the screen's top left corner
-        self.BORDERS_BOTTOM_RIGHT = (Game.window_width, Game.window_height)  # the x and y coordinates for
-        # the screen's bottom right corner
-        self.BORDERS = (self.BORDERS_TOP_LEFT, self.BORDERS_BOTTOM_RIGHT)  # the x and y coordinates for
         # the screen's corners
         self.clock = pygame.time.Clock()  # used to set the game ticks per second
         self.tcp_client = tcp_client.TCPClient(self)
@@ -39,7 +33,7 @@ class Game:
 
     def init_screen(self):
         os.environ['SDL_VIDEO_WINDOW_POS'] = "{0},{1}".format(0, 0)  # setting full screen
-        self.screen = pygame.display.set_mode((Game.window_width, Game.window_height))
+        self.screen = pygame.display.set_mode((game_map.BORDERS_BOTTOM_RIGHT[0], game_map.BORDERS_BOTTOM_RIGHT[1]))
         pygame.display.set_caption("Last To Stand")
 
     def tcp_update(self, data):
@@ -88,7 +82,7 @@ class Game:
                                (players[i].shadow.x, players[i].shadow.y),
                                players[i].shadow.radius)
             for bullet in players[i].bullets:
-                if not bullet.move_projectile(self.BORDERS):
+                if not bullet.move_projectile(game_map.BORDERS):
                     players[i].bullets.remove(bullet)
                 pygame.draw.rect(self.screen, projectile.COLOR, (bullet.x, bullet.y, bullet.width, bullet.height))
             if players[i].walk_count + 1 >= 12:
@@ -159,7 +153,6 @@ def main():
     pygame.init()
     time.perf_counter()
     last_time = -1
-
     while game.running:
         keys = pygame.key.get_pressed()
         mouse_buttons = pygame.mouse.get_pressed()
@@ -175,6 +168,7 @@ def main():
         if time.perf_counter() - last_time > 1:
             print(game.player.is_moving)
             last_time = time.perf_counter()
+        game.clock.tick(30)
 
     print("done")
     pygame.quit()

@@ -14,7 +14,6 @@ class Game:
     def __init__(self):
         self.screen = None
         self.waiting_to_start = True
-        self.opponents = None  # his opponents
         self.players = None  # all players, the main player and his opponents
         self.player = None
         self.running = False  # whether the game is running or not
@@ -31,13 +30,12 @@ class Game:
 
     def init_game(self):  # initializing variables
         data = self.connect_to_server()
+        self.tcp_client.start()
         data = data.split(":")
         self.player_id = int(data[1])
         self.udp_client = udp_client.UDPClient(self.player_id)
         self.players = setup_players()
-        self.opponents = self.players
         self.player = self.players[self.player_id]
-        self.opponents.remove(self.player)
 
     def init_screen(self):
         os.environ['SDL_VIDEO_WINDOW_POS'] = "{0},{1}".format(0, 0)  # setting full screen
@@ -45,6 +43,7 @@ class Game:
         pygame.display.set_caption("Last To Stand")
 
     def tcp_update(self, data):
+        print("got tcp update\ndata is: {}".format(data))
         data = data.strip()
 
         if data.startswith("We need to wait to"):  # we got "Wait to start:0" or "Wait to start:1"
@@ -53,14 +52,17 @@ class Game:
         elif data == "starting":
             self.running = True
             self.waiting_to_start = False
+
         elif data == "ok":
             self.running = False
             self.udp_client.disconnect()
+
         elif data.startswith("update"):
             data = data.split(":")[1]
             data = eval(data)
             for i in range(len(self.players)):
                 self.players[i].use_info(data[i])
+
         elif "disconnect" in data:
             disconnect_id = int(data.split(":")[1])
             self.players[disconnect_id].is_dead = True
@@ -79,6 +81,7 @@ class Game:
         self.screen.blit(self.background, (0, 0))
         for player in self.players:
             if player.is_dead:
+                print("player is dead")
                 continue
             pygame.draw.circle(self.screen, player.shadow.color, (player.shadow.x, player.shadow.y),
                                player.shadow.radius)
@@ -92,11 +95,10 @@ class Game:
                 self.screen.blit(
                     player.sprites[player.direction_to_index[player.current_direction]][player.walk_count // 3],
                     (player.x, player.y))
-                player.walk_count += 1
             else:
                 self.screen.blit(player.directions[player.current_direction], (player.x, player.y))
 
-            if self.player.should_die(get_all_bullets(self.opponents)):
+            if self.player.should_die(get_all_bullets(self.players)):
                 self.game_over()
         pygame.display.update()
 
@@ -142,20 +144,25 @@ def main():
     game = Game()
     game.init_game()
     while game.waiting_to_start:
-        game.tcp_update(game.receive_tcp_from_server())
+        time.sleep(1)
 
-    # game.init_screen()
+    game.init_screen()
     pygame.init()
-
+    time.perf_counter()
+    last_time = -1
     while game.running:
         keys = pygame.key.get_pressed()
         mouse_buttons = pygame.mouse.get_pressed()
         for event in pygame.event.get():
             game.by_event(event)
         game.player.move_by_keyboard(keys, mouse_buttons)
-        time.sleep(10)
+        time.sleep(network_constants.UPDATE_SPEED)
         game.player.send_info()
-        # game.draw_game_window()
+        game.draw_game_window()
+        if time.perf_counter() - last_time > 1:
+            # print("player id: {} \nplayer 3 x: {} y: {}".format(game.player_id, game.players[2].x, game.players[2].y))
+            last_time = time.perf_counter()
+
     print("done")
     pygame.quit()
 

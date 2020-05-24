@@ -162,7 +162,7 @@ def main():
 
         game.player.move_by_keyboard(keys, mouse_buttons)
         time.sleep(network_constants.UPDATE_SPEED)
-        game.player.send_info()
+        # game.player.send_info()
         game.draw_game_window(game.players)
 
         if time.perf_counter() - last_time > 1:

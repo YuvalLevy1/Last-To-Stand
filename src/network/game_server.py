@@ -11,7 +11,7 @@ the class is responsible for sending and receiving information in tcp for each c
 
 class Game(threading.Thread):
 
-    def __init__(self, output_sockets, messages):
+    def __init__(self, output_sockets, input_sockets, messages):
         """
         :parameter messages is a dictionary that contains tcp socket as a key
         and a message to this socket as a value.
@@ -19,6 +19,7 @@ class Game(threading.Thread):
         threading.Thread.__init__(self)
         self.messages = messages
         self.output_sockets = output_sockets
+        self.input_sockets = input_sockets
         self.running = False
 
     """
@@ -33,6 +34,7 @@ class Game(threading.Thread):
             time.sleep(network_constants.UPDATE_SPEED)
             message = "update:" + json.dumps(list(self.messages.values()))
             network_functions.send_to_clients(self.output_sockets, message)
+            self.messages = self.reset_messages()
         print("end game")
 
     """
@@ -56,3 +58,10 @@ class Game(threading.Thread):
         self.output_sockets.remove(self.output_sockets[client_id])
         self.messages.remove(self.messages[client_id])
         network_functions.send_to_clients(self.output_sockets, "id disconnected:{} ".format(client_id))
+
+    def reset_messages(self):
+        messages = self.messages
+
+        for udp_socket in self.input_sockets:
+            messages[udp_socket] = "(0, 0, 'down', False)"
+        return messages

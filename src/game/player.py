@@ -66,9 +66,11 @@ class Player:
                                         }
 
     def move_left(self, borders):
+        self.is_moving = True
         self.current_direction = "left"
         if self.x - self.velocity > borders[0][0]:
             self.x -= self.velocity
+            print("moving left")
             self.hitbox[0] -= self.velocity
             self.hitbox[2] -= self.velocity
             self.update_shadow()
@@ -76,8 +78,10 @@ class Player:
         return False
 
     def move_right(self, borders):
+        self.is_moving = True
         self.current_direction = "right"
         if self.x + self.width + self.velocity < borders[1][0]:
+            print("moving right")
             self.x += self.velocity
             self.hitbox[0] += self.velocity
             self.hitbox[2] += self.velocity
@@ -86,8 +90,10 @@ class Player:
         return False
 
     def move_down(self, borders):
+        self.is_moving = True
         self.current_direction = "down"
         if self.y + self.height + self.velocity < borders[1][1]:
+            print("moving down")
             self.y += self.velocity
             self.hitbox[1] += self.velocity
             self.hitbox[3] += self.velocity
@@ -96,8 +102,10 @@ class Player:
         return False
 
     def move_up(self, borders):
+        self.is_moving = True
         self.current_direction = "up"
         if self.y - self.velocity > borders[0][1]:
+            print("moving up")
             self.y -= self.velocity
             self.hitbox[1] -= self.velocity
             self.hitbox[3] -= self.velocity
@@ -152,6 +160,7 @@ class Player:
     '''
 
     def move_by_keyboard(self, keys, mouse_buttons):
+        self.is_moving = True
 
         if keys[pygame.K_a] and keys[pygame.K_w]:
             self.move_up_left(self.map_borders)
@@ -252,6 +261,9 @@ class Player:
             self.move_up(self.map_borders)
             self.is_moving = True
             self.walk_count += 1
+        else:
+            self.walk_count = 0
+            self.is_moving = False
 
     def update_shadow(self):
         self.shadow.update_shadow()

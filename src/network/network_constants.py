@@ -1,4 +1,4 @@
-SERVER_IP = "192.168.2.61"  # the server's IP
+SERVER_IP = "192.168.175.16"  # the server's IP
 UDP_PORT_NUMBER = 11000  # the server's base UPD port. all other UDP ports will be created from it
 TCP_PORT_NUMBER = 10000  # the server's TCP port
 MAX_NUM_OF_CLIENTS = 4  # the maximum amount of players.

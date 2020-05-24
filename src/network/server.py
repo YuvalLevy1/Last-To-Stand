@@ -53,7 +53,6 @@ def receive(server_socket):
     try:
         data, client_address = server_socket.recvfrom(network_constants.UDP_MSG_LEN)
         data = data.decode().strip()
-        print("message From: " + str(client_address) + "  " + data)
         return data, client_address
 
     except Exception as e:
@@ -85,7 +84,8 @@ def create_socket_messages_var(udp_sockets):
 
 def close_sockets(udp_sockets):
     for udp_socket in udp_sockets:
-        udp_socket.close()
+        if udp_sockets is not None:
+            udp_socket.close()
 
 
 def main():
@@ -121,7 +121,6 @@ def main():
                     request = None
                     print("1:", e.args)
                 if request:
-                    print("request", request)
                     game.update(udp_server_socket, client_id, request)
                     if request == "Bye":
                         input_sockets[client_id] = None

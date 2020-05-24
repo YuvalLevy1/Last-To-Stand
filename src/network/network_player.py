@@ -11,11 +11,13 @@ class NetworkPlayer(Player):
 
     def use_info(self, info):
         info = eval(info)
-        if info[1]:
-            self.move_by_direction(info[0])
+        if info[len(info) - 1]:
+            self.x = info[0]
+            self.y = info[1]
+            self.move_by_direction(info[2])
             self.is_moving = True
         self.is_moving = False
 
     def send_info(self):
-        info = str((self.current_direction, self.is_moving))
+        info = str((self.x, self.y, self.current_direction, self.is_moving))
         self.udp_client.send(info)

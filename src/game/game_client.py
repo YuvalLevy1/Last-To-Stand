@@ -43,7 +43,6 @@ class Game:
         pygame.display.set_caption("Last To Stand")
 
     def tcp_update(self, data):
-        print("got tcp update\ndata is: {}".format(data))
         data = data.strip()
 
         if data.startswith("We need to wait to"):  # we got "Wait to start:0" or "Wait to start:1"
@@ -61,6 +60,8 @@ class Game:
             data = data.split(":")[1]
             data = eval(data)
             for i in range(len(self.players)):
+                if self.player_id == i:
+                    continue
                 self.players[i].use_info(data[i])
 
         elif "disconnect" in data:
@@ -77,26 +78,34 @@ class Game:
                 self.players[self.player_id].udp_client.send("Bye")
             self.running = False
 
-    def draw_game_window(self):
+    def draw_game_window(self, players):
         self.screen.blit(self.background, (0, 0))
-        for player in self.players:
-            if player.is_dead:
+        for i in range(network_constants.MAX_NUM_OF_CLIENTS):
+            if players[i].is_dead:
                 print("player is dead")
                 continue
-            pygame.draw.circle(self.screen, player.shadow.color, (player.shadow.x, player.shadow.y),
-                               player.shadow.radius)
-            for bullet in player.bullets:
+            pygame.draw.circle(self.screen, players[i].shadow.color,
+                               (players[i].shadow.x, players[i].shadow.y),
+                               players[i].shadow.radius)
+            for bullet in players[i].bullets:
                 if not bullet.move_projectile(self.BORDERS):
-                    player.bullets.remove(bullet)
+                    players[i].bullets.remove(bullet)
                 pygame.draw.rect(self.screen, projectile.COLOR, (bullet.x, bullet.y, bullet.width, bullet.height))
-            if player.walk_count + 1 >= 12:
-                player.walk_count = 0
-            if player.is_moving:
-                self.screen.blit(
-                    player.sprites[player.direction_to_index[player.current_direction]][player.walk_count // 3],
-                    (player.x, player.y))
+            if players[i].walk_count + 1 >= 12:
+                players[i].walk_count = 0
+            if players[i].is_moving:
+                print("drawing sprint")
+                try:
+                    self.screen.blit(
+                        players[i].sprites[players[i].direction_to_index[players[i].current_direction]][
+                            players[i].walk_count // 3],
+                        (players[i].x, players[i].y))
+                except Exception:
+                    players[i].walk_count = 0
+                # players[i].walk_count += 1
             else:
-                self.screen.blit(player.directions[player.current_direction], (player.x, player.y))
+                self.screen.blit(self.players[i].directions[self.players[i].current_direction],
+                                 (self.players[i].x, self.players[i].y))
 
             if self.player.should_die(get_all_bullets(self.players)):
                 self.game_over()
@@ -150,17 +159,21 @@ def main():
     pygame.init()
     time.perf_counter()
     last_time = -1
+
     while game.running:
         keys = pygame.key.get_pressed()
         mouse_buttons = pygame.mouse.get_pressed()
+
         for event in pygame.event.get():
             game.by_event(event)
+
         game.player.move_by_keyboard(keys, mouse_buttons)
         time.sleep(network_constants.UPDATE_SPEED)
         game.player.send_info()
-        game.draw_game_window()
+        game.draw_game_window(game.players)
+
         if time.perf_counter() - last_time > 1:
-            # print("player id: {} \nplayer 3 x: {} y: {}".format(game.player_id, game.players[2].x, game.players[2].y))
+            print(game.player.is_moving)
             last_time = time.perf_counter()
 
     print("done")

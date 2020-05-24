@@ -162,7 +162,7 @@ def main():
             game.by_event(event)
 
         game.player.move_by_keyboard(keys, mouse_buttons)
-        time.sleep(network_constants.UPDATE_SPEED)
+        # time.sleep(network_constants.UPDATE_SPEED)
         game.player.send_info()
         game.draw_game_window(game.players)
 

@@ -41,6 +41,3 @@ class TCPClient(Thread):
                         self.game.tcp_update(data)
         except Exception as exception:
             print("exception occurred in tcp reading thread: {}".format(exception.args))
-
-        finally:
-            self.client_socket.close()

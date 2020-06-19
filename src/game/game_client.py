@@ -91,7 +91,6 @@ class Game:
                 self.players[i].walk_count = 0
 
             if players[i].is_moving:
-                print("drawing sprint")
                 try:
                     self.screen.blit(
                         players[i].sprites[players[i].direction_to_index[players[i].current_direction]][
@@ -168,7 +167,7 @@ def main():
         game.draw_game_window(game.players)
 
         if time.perf_counter() - last_time > 1:
-            print("id: {}".format(game.players[2].walk_count))
+            # print("id: {}".format(game.players[2].walk_count))
             last_time = time.perf_counter()
         game.clock.tick(30)
 

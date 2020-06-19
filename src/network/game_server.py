@@ -21,6 +21,7 @@ class Game(threading.Thread):
         self.output_sockets = output_sockets
         self.running = False
 
+
     """
     the function runs in a different thread.
     it waits for each player to send his tcp update and then sends it to each client.

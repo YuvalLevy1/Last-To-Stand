@@ -66,6 +66,7 @@ class Player:
                                         }
 
     def move_left(self, borders):
+        self.is_moving = True
         self.current_direction = "left"
         if self.x - self.velocity > borders[0][0]:
             self.x -= self.velocity
@@ -76,6 +77,7 @@ class Player:
         return False
 
     def move_right(self, borders):
+        self.is_moving = True
         self.current_direction = "right"
         if self.x + self.width + self.velocity < borders[1][0]:
             self.x += self.velocity
@@ -86,6 +88,7 @@ class Player:
         return False
 
     def move_down(self, borders):
+        self.is_moving = True
         self.current_direction = "down"
         if self.y + self.height + self.velocity < borders[1][1]:
             self.y += self.velocity
@@ -96,6 +99,7 @@ class Player:
         return False
 
     def move_up(self, borders):
+        self.is_moving = True
         self.current_direction = "up"
         if self.y - self.velocity > borders[0][1]:
             self.y -= self.velocity
@@ -152,38 +156,47 @@ class Player:
     '''
 
     def move_by_keyboard(self, keys, mouse_buttons):
+        self.is_moving = True
 
         if keys[pygame.K_a] and keys[pygame.K_w]:
             self.move_up_left(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
 
         elif keys[pygame.K_a] and keys[pygame.K_s]:
             self.move_down_left(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
 
         elif keys[pygame.K_d] and keys[pygame.K_w]:
             self.move_up_right(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
 
         elif keys[pygame.K_d] and keys[pygame.K_s]:
             self.move_down_right(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
 
         elif keys[pygame.K_a]:
             self.move_left(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
 
         elif keys[pygame.K_d]:
             self.move_right(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
 
         elif keys[pygame.K_s]:
             self.move_down(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
 
-        elif + keys[pygame.K_w]:
+        elif keys[pygame.K_w]:
             self.move_up(self.map_borders)
             self.is_moving = True
+            self.walk_count += 1
         else:
             self.walk_count = 0
             self.is_moving = False
@@ -205,7 +218,48 @@ class Player:
                         return True
 
     def move_by_direction(self, direction):
-        self.directions_to_functions[direction](self.map_borders)
+        if direction == "up left":
+            self.move_up_left(self.map_borders)
+            self.is_moving = True
+            self.walk_count += 1
+
+        elif direction == "down left":
+            self.move_down_left(self.map_borders)
+            self.is_moving = True
+            self.walk_count += 1
+
+        elif direction == "up right":
+            self.move_up_right(self.map_borders)
+            self.is_moving = True
+            self.walk_count += 1
+
+        elif direction == "down right":
+            self.move_down_right(self.map_borders)
+            self.is_moving = True
+            self.walk_count += 1
+
+        elif direction == "left":
+            self.move_left(self.map_borders)
+            self.is_moving = True
+            self.walk_count += 1
+
+        elif direction == "right":
+            self.move_right(self.map_borders)
+            self.is_moving = True
+            self.walk_count += 1
+
+        elif direction == "down":
+            self.move_down(self.map_borders)
+            self.is_moving = True
+            self.walk_count += 1
+
+        elif direction == "up":
+            self.move_up(self.map_borders)
+            self.is_moving = True
+            self.walk_count += 1
+        else:
+            self.is_moving = False
+            self.walk_count = 0
 
     def update_shadow(self):
         self.shadow.update_shadow()

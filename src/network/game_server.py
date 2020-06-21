@@ -21,6 +21,7 @@ class Game(threading.Thread):
         self.output_sockets = output_sockets
         self.running = False
 
+
     """
     the function runs in a different thread.
     it waits for each player to send his tcp update and then sends it to each client.
@@ -49,7 +50,7 @@ class Game(threading.Thread):
         self.running = True
         message = "starting"  # "start" consist of 5 chars
         network_functions.send_to_clients(self.output_sockets, message)
-        time.sleep(2)  # for client get "start"
+        time.sleep(3)  # waiting for client to start
 
     def player_quit(self, client_id):
         network_functions.send_to_client(self.output_sockets[client_id], "ok")

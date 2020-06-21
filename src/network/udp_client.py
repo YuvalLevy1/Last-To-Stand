@@ -13,6 +13,7 @@ class UDPClient:
         self.server_address = (self.server_ip, self.server_port)
 
     def send(self, message):
+        message = message.rjust(network_constants.UDP_MSG_LEN)
         self.client_socket.sendto((message.strip()).encode(), self.server_address)
 
     def disconnect(self):
